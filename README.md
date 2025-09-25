@@ -6,6 +6,8 @@
   </a>
 </p>
 
+### Use node v16
+
 ## Install
 
 ```sh
