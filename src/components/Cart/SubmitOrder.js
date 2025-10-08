@@ -1,7 +1,15 @@
 import styles from './SubmitOrder.module.css';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
+
+const isInputValid = (inputValue) => inputValue.trim() !== '';
 
 const SubmitOrder = (props) => {
+  const [formValidity, setFormValidity] = useState({
+    name: true,
+    city: true,
+    address: true
+  });
+
   const nameInputRef = useRef();
   const cityInputRef = useRef();
   const addressInputRef = useRef();
@@ -12,21 +20,47 @@ const SubmitOrder = (props) => {
     const enteredName = nameInputRef.current.value;
     const enteredCity = cityInputRef.current.value;
     const enteredAddress = addressInputRef.current.value;
+
+    const isEnteredNameValid = isInputValid(enteredName);
+    const isEnteredCityValid = isInputValid(enteredCity);
+    const isEnteredAddressValid = isInputValid(enteredAddress);
+
+    setFormValidity({
+      name: isEnteredNameValid,
+      city: isEnteredCityValid,
+      address: isEnteredAddressValid
+    });
+
+    const isFormValid =
+      isEnteredNameValid && isEnteredCityValid && isEnteredAddressValid;
+
+    if (!isFormValid) {
+      return;
+    }
+
+    // Отправка данных на сервер
   };
+
+  const nameInputClasses = `${styles.control} ${formValidity.name ? '' : styles.invalid}`;
+  const cityInputClasses = `${styles.control} ${formValidity.city ? '' : styles.invalid}`;
+  const addressInputClasses = `${styles.control} ${formValidity.address ? '' : styles.invalid}`;
 
   return (
     <form className={styles.form} onClick={confirmOrderHandler}>
-      <div className={styles.control}>
-        <label htmlFor="name">Введите имя</label>
+      <div className={nameInputClasses}>
+        <label htmlFor="name">Имя</label>
         <input ref={nameInputRef} type="text" id="name" />
+        {!formValidity.name && <p>Введите имя</p>}
       </div>
-      <div className={styles.control}>
-        <label htmlFor="city">Введите название города</label>
+      <div className={cityInputClasses}>
+        <label htmlFor="city">Город</label>
         <input ref={cityInputRef} type="text" id="city" />
+        {!formValidity.city && <p>Введите город</p>}
       </div>
-      <div className={styles.control}>
-        <label htmlFor="address">Введите адрес</label>
+      <div className={addressInputClasses}>
+        <label htmlFor="address">Адрес</label>
         <input ref={addressInputRef} type="text" id="address" />
+        {!formValidity.address && <p>Введите адрес</p>}
       </div>
       <div className={styles.actions}>
         <button className={styles.submit}>Подтвердить заказ</button>
