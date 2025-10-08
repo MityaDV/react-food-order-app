@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 const MealList = (props) => {
   const [meals, setMeals] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [httpErrorMessage, setHttpErrorMessage] = useState();
 
   useEffect(() => {
     const getMeals = async () => {
@@ -13,6 +14,11 @@ const MealList = (props) => {
       const res = await fetch(
         'https://react-cours-http-3ee12-default-rtdb.firebaseio.com/meals.json'
       );
+
+      if (!res.ok) {
+        throw new Error('Failed to fetch meals.');
+      }
+
       const responseData = await res.json();
 
       const loadedMeals = [];
@@ -29,13 +35,24 @@ const MealList = (props) => {
       setIsLoading(false);
     };
 
-    getMeals();
+    getMeals().catch((err) => {
+      setIsLoading(false);
+      setHttpErrorMessage(err.message);
+    });
   }, []);
 
   if (isLoading) {
     return (
       <section className={styles.loading}>
         <p>Извлечение данных с сервера...</p>
+      </section>
+    );
+  }
+
+  if (httpErrorMessage) {
+    return (
+      <section className={styles.error}>
+        <p>{httpErrorMessage}</p>
       </section>
     );
   }
