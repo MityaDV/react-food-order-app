@@ -39,6 +39,12 @@ const SubmitOrder = (props) => {
     }
 
     // Отправка данных на сервер
+
+    props.onSubmit({
+      name: enteredName,
+      city: enteredCity,
+      address: enteredAddress
+    });
   };
 
   const nameInputClasses = `${styles.control} ${formValidity.name ? '' : styles.invalid}`;
