@@ -1,12 +1,16 @@
 import styles from './Cart.module.css';
 import Modal from '../UI/Modal';
-import { useContext, useState } from 'react';
+import React, { Fragment, useContext, useState } from 'react';
 import CartContext from '../../store/cart-context';
 import CartItem from './CartItem';
 import SubmitOrder from './SubmitOrder';
 
 const Cart = (props) => {
   const [isSubmitOrderAvailable, setIsSubmitOrderAvailable] = useState(false);
+  const [isDataSubmitting, setIsDataSubmitting] = useState(false);
+  const [wasDataSendingSuccessful, setWasDataSendingSuccessful] =
+    useState(false);
+
   const cartContext = useContext(CartContext);
 
   const totalAmount = `$${Math.abs(cartContext.totalAmount).toFixed(2)}`;
@@ -25,7 +29,9 @@ const Cart = (props) => {
   };
 
   const submitOrderHandler = async (userData) => {
-    fetch(
+    setIsDataSubmitting(true);
+
+    await fetch(
       'https://react-cours-http-3ee12-default-rtdb.firebaseio.com/orders.json',
       {
         method: 'POST',
@@ -35,6 +41,9 @@ const Cart = (props) => {
         })
       }
     );
+    setIsDataSubmitting(false);
+    setWasDataSendingSuccessful(true);
+    cartContext.clearCart();
   };
 
   const cartItems = (
@@ -65,8 +74,8 @@ const Cart = (props) => {
     </div>
   );
 
-  return (
-    <Modal onHideCart={props.onHideCart}>
+  const cartModalContent = (
+    <React.Fragment>
       {cartItems}
       <div className={styles.total}>
         <span>Итого</span>
@@ -80,6 +89,27 @@ const Cart = (props) => {
         />
       )}
       {!isSubmitOrderAvailable && modalButtons}
+    </React.Fragment>
+  );
+
+  const dataSubmittingCartModalContent = <p>Отправка данных заказа...</p>;
+
+  const dataWasSubmittedCartModalContent = (
+    <React.Fragment>
+      <p>Ваш заказ успешно отправлен</p>
+      <div className={styles.actions}>
+        <button className={styles['button-alt']} onClick={props.onHideCart}>
+          Закрыть
+        </button>
+      </div>
+    </React.Fragment>
+  );
+
+  return (
+    <Modal onHideCart={props.onHideCart}>
+      {!isDataSubmitting && !wasDataSendingSuccessful && cartModalContent}
+      {isDataSubmitting && dataSubmittingCartModalContent}
+      {wasDataSendingSuccessful && dataWasSubmittedCartModalContent}
     </Modal>
   );
 };
