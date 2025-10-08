@@ -1,28 +1,39 @@
 import styles from './SubmitOrder.module.css';
+import { useRef } from 'react';
 
 const SubmitOrder = (props) => {
+  const nameInputRef = useRef();
+  const cityInputRef = useRef();
+  const addressInputRef = useRef();
+
   const confirmOrderHandler = (event) => {
     event.preventDefault();
+
+    const enteredName = nameInputRef.current.value;
+    const enteredCity = cityInputRef.current.value;
+    const enteredAddress = addressInputRef.current.value;
   };
 
   return (
-    <form action="" onClick={confirmOrderHandler}>
+    <form className={styles.form} onClick={confirmOrderHandler}>
       <div className={styles.control}>
         <label htmlFor="name">Введите имя</label>
-        <input type="text" id="name" />
+        <input ref={nameInputRef} type="text" id="name" />
       </div>
       <div className={styles.control}>
         <label htmlFor="city">Введите название города</label>
-        <input type="text" id="city" />
+        <input ref={cityInputRef} type="text" id="city" />
       </div>
       <div className={styles.control}>
         <label htmlFor="address">Введите адрес</label>
-        <input type="text" id="address" />
+        <input ref={addressInputRef} type="text" id="address" />
       </div>
-      <button>Подтвердить заказ</button>
-      <button type="button" onClick={props.onCancel}>
-        Отменить
-      </button>
+      <div className={styles.actions}>
+        <button className={styles.submit}>Подтвердить заказ</button>
+        <button type="button" onClick={props.onCancel}>
+          Отменить
+        </button>
+      </div>
     </form>
   );
 };
